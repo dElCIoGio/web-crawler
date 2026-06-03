@@ -1,0 +1,19 @@
+services:
+  nginx:
+    image: nginx:latest
+    container_name: crawler_nginx
+    ports:
+      - "${API_GATEWAY_PORT}:80"
+    volumes:
+      - ./infrastructure/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+  crawler-service:
+    container_name: crawler-service
+    build:
+      context: services/crawler-service
+      dockerfile: Dockerfile
+
+  saga-service:
+    container_name: saga-service
+    build:
+      context: services/saga-service
+      dockerfile: Dockerfile
