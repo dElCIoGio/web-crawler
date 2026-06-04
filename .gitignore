@@ -37,4 +37,12 @@ dist-ssr
 *.sln
 *.sw?
 
+# packages
+packages/clients/python/*
+!packages/clients/python/.gitkeep
 
+packages/clients/go/*
+!packages/clients/go/.gitkeep
+
+packages/clients/typescript/*
+!packages/clients/typescript/.gitkeep

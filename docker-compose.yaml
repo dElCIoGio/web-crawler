@@ -1,4 +1,12 @@
 services:
+  openapi-generate:
+    container_name: openapi-generate
+    image: node:20-alpine
+    working_dir: /workspace
+    volumes:
+      - .:/workspace
+    command: >
+      sh -c "apk add --no-cache make openjdk17-jre && make openapi-generate"
   nginx:
     image: nginx:latest
     container_name: crawler_nginx
@@ -6,19 +14,55 @@ services:
       - "${API_GATEWAY_PORT}:80"
     volumes:
       - ./infrastructure/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      crawler-service:
+        condition: service_started
   crawler-service:
+
+#   CANNOT START WITHOUT THE CLIENTS TODO: REPLICATE FOR THE OTHER SERVICES
+    depends_on:
+      openapi-generate:
+        condition: service_completed_successfully
+
+
     container_name: crawler-service
     build:
-      context: services/crawler-service
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: services/crawler-service/Dockerfile
+      args:
+        OPENAPI_PYTHON_CLIENTS: ""
+        # EXAMPLE: OPENAPI_PYTHON_CLIENTS: "crawler users billing"
+    env_file:
+      - .env
+    environment:
+      POSTGRES_DATABASE_URL: "${POSTGRES_DATABASE_URL}"
   saga-service:
     container_name: saga-service
     build:
-      context: services/saga-service
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: services/saga-service/Dockerfile
+      args:
+        OPENAPI_GO_CLIENTS: "crawler"
   frontend:
+    container_name: frontend
     build:
       context: apps/frontend
       dockerfile: Dockerfile
     ports:
-      - "8000:8000"
+      - "${FRONTEND_PORT}:8000"
+
+  postgres:
+    image: postgres:16
+    container_name: crawler-postgres
+    environment:
+      POSTGRES_DB: "${POSTGRES_DATABASE_NAME}"
+      POSTGRES_USER: "${POSTGRES_DATABASE_USER}"
+      POSTGRES_PASSWORD: "${POSTGRES_DATABASE_PASSWORD}"
+    ports:
+      - "${POSTGRES_PORT}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./infrastructure/postgres/init.sql:/docker-entrypoint-initdb.d/init.sql
+
+volumes:
+  postgres_data:

@@ -1,0 +1,32 @@
+openapi: 3.0.3
+info:
+  title: Crawler Service
+  description: HTTP API for the crawler service.
+  version: 0.1.0
+servers:
+  - url: '/api/crawler/'
+paths:
+  /health:
+    get:
+      summary: Health check
+      operationId: getCrawlerHealth
+      responses:
+        '200':
+          description: Crawler service is running
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthStatus'
+components:
+  schemas:
+    HealthStatus:
+      type: object
+      required:
+       - status
+      properties:
+        status:
+          type: string
+          example: ok
+        service:
+          type: string
+      additionalProperties: false
