@@ -11,9 +11,14 @@ services:
     build:
       context: services/crawler-service
       dockerfile: Dockerfile
-
   saga-service:
     container_name: saga-service
     build:
       context: services/saga-service
       dockerfile: Dockerfile
+  frontend:
+    build:
+      context: apps/frontend
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"

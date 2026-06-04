@@ -11,7 +11,7 @@ func main() {
 
 	http.HandleFunc("/health", handlers.Health)
 
-	port := ":8001"
+	port := ":8002"
 	println("Server is running on port", port)
 	if err := http.ListenAndServe(port, nil); err != nil {
 		println("Error starting server:", err)

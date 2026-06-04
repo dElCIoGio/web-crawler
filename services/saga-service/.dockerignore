@@ -1,0 +1,30 @@
+# Git
+.git
+.gitignore
+
+# Build outputs
+bin/
+dist/
+build/
+
+# Test artifacts
+coverage.out
+*.coverprofile
+
+# IDEs
+.vscode/
+.idea/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Environment files
+.env
+.env.*
+
+# Docker (optional)
+docker-compose*.yml
+
+# Logs
+*.log
